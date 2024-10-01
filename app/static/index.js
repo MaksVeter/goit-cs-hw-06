@@ -9,7 +9,7 @@ const subscribe = document.getElementById('messages');
 
 formChat.addEventListener('submit', (e) => {
     e.preventDefault();
-    
+
     const messageData = {
         username: usernameField.value,
         message: messageField.value
@@ -17,9 +17,21 @@ formChat.addEventListener('submit', (e) => {
 
     console.log(messageData);
 
-    ws.send(JSON.stringify(messageData));
-
-    messageField.value = '';
+    fetch('/message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams(messageData)
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Message sent:', data);
+        messageField.value = '';
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
 });
 
 ws.onopen = (e) => {
